@@ -1,0 +1,263 @@
+{
+	"info": {
+		"_postman_id": "4a839c12-eb87-4c08-829d-a55f3d4084e5",
+		"name": "ForoHub API Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29892749"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"correoElectronico\": \"juan.perez@example.com\",\n  \"contrasena\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verifica si la respuesta contiene un token\r",
+									"if (pm.response.code === 200) {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.token) {\r",
+									"        // Configura la variable global auth_token con el valor del token\r",
+									"        pm.collectionVariables.set(\"auth_token\", jsonData.token);\r",
+									"        console.log(\"Auth Token guardado exitosamente:\", jsonData.token);\r",
+									"    } else {\r",
+									"        console.error(\"No se encontró el token en la respuesta.\");\r",
+									"    }\r",
+									"} else {\r",
+									"    console.error(\"Falló la autenticación. Código de respuesta:\", pm.response.code);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con la autenticación de usuarios."
+		},
+		{
+			"name": "Tópicos",
+			"item": [
+				{
+					"name": "Crear Tópico",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Nuevo Tópico\",\n  \"mensaje\": \"Este es un mensaje de ejemplo.\",\n  \"autorId\": 1,\n  \"cursoId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/topicos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topicos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Tópicos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/topicos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topicos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Tópico por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/topicos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topicos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Tópico",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Título actualizado\",\n  \"mensaje\": \"Mensaje actualizado.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/topicos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topicos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Tópico",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/topicos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topicos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con la gestión de tópicos."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "auth_token",
+			"value": ""
+		}
+	]
+}

@@ -15,19 +15,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     private final JwtService jwtService;
     private final UsuarioService usuarioService;
 
     public JwtAuthenticationFilter(
+            HandlerExceptionResolver handlerExceptionResolver,
             JwtService jwtService,
             UsuarioService usuarioService
                                   ) {
+        this.handlerExceptionResolver = handlerExceptionResolver;
         this.jwtService = jwtService;
         this.usuarioService = usuarioService;
     }
@@ -79,15 +83,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter()
-                    .write("Token JWT expirado.");
+                    .write("{\"error\":\"Token JWT expirado.\"}");
         } catch (SignatureException e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter()
-                    .write("Firma del JWT no válida.");
+                    .write("{\"error\":\"Firma del JWT no válida.\"}");
         } catch (Exception e) {
+            handlerExceptionResolver.resolveException(request,
+                                                      response,
+                                                      null,
+                                                      e
+                                                     );
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.getWriter()
-                    .write("Error interno al validar el JWT.");
+                    .write("{\"error\":\"Error interno del servidor.\"}");
         }
     }
 }

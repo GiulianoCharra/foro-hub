@@ -19,6 +19,12 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-resources"
+    };
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
@@ -36,6 +42,8 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(SWAGGER_WHITELIST)  // Permitir Swagger
+                        .permitAll()
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
                         .requestMatchers("/auth/**")
